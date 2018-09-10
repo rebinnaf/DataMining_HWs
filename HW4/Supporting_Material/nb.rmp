@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="8.2.000">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="8.2.000" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="retrieve" compatibility="8.2.000" expanded="true" height="68" name="Retrieve NB_Training" width="90" x="112" y="34">
+        <parameter key="repository_entry" value="//Local Repository/data/NB_Training"/>
+      </operator>
+      <operator activated="true" class="set_role" compatibility="8.2.000" expanded="true" height="82" name="Set Role" width="90" x="246" y="34">
+        <parameter key="attribute_name" value="2nd_Heart_Attack"/>
+        <parameter key="target_role" value="label"/>
+        <list key="set_additional_roles"/>
+      </operator>
+      <operator activated="true" class="naive_bayes" compatibility="8.2.000" expanded="true" height="82" name="Naive Bayes" width="90" x="380" y="34">
+        <parameter key="laplace_correction" value="true"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="8.2.000" expanded="true" height="68" name="Retrieve NB_Scoring" width="90" x="380" y="238">
+        <parameter key="repository_entry" value="data/NB_Scoring"/>
+      </operator>
+      <operator activated="true" class="apply_model" compatibility="8.2.000" expanded="true" height="82" name="Apply Model" width="90" x="514" y="34">
+        <list key="application_parameters"/>
+        <parameter key="create_view" value="false"/>
+      </operator>
+      <operator activated="true" class="write_csv" compatibility="8.2.000" expanded="true" height="82" name="Write CSV" width="90" x="648" y="34">
+        <parameter key="csv_file" value="/Users/user/Documents/courses/DM/HW/DataMining_HWs/HW4/nb.csv"/>
+        <parameter key="column_separator" value=";"/>
+        <parameter key="write_attribute_names" value="true"/>
+        <parameter key="quote_nominal_values" value="true"/>
+        <parameter key="format_date_attributes" value="true"/>
+        <parameter key="append_to_file" value="false"/>
+        <parameter key="encoding" value="SYSTEM"/>
+      </operator>
+      <connect from_op="Retrieve NB_Training" from_port="output" to_op="Set Role" to_port="example set input"/>
+      <connect from_op="Set Role" from_port="example set output" to_op="Naive Bayes" to_port="training set"/>
+      <connect from_op="Naive Bayes" from_port="model" to_op="Apply Model" to_port="model"/>
+      <connect from_op="Retrieve NB_Scoring" from_port="output" to_op="Apply Model" to_port="unlabelled data"/>
+      <connect from_op="Apply Model" from_port="labelled data" to_op="Write CSV" to_port="input"/>
+      <connect from_op="Apply Model" from_port="model" to_port="result 2"/>
+      <connect from_op="Write CSV" from_port="through" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+      <portSpacing port="sink_result 3" spacing="0"/>
+    </process>
+  </operator>
+</process>

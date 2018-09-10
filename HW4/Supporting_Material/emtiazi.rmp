@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="8.2.000">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="8.2.000" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="retrieve" compatibility="8.2.000" expanded="true" height="68" name="Retrieve NB_Training" width="90" x="45" y="85">
+        <parameter key="repository_entry" value="//Local Repository/data/NB_Training"/>
+      </operator>
+      <operator activated="true" class="set_role" compatibility="8.2.000" expanded="true" height="82" name="Set Role" width="90" x="179" y="85">
+        <parameter key="attribute_name" value="2nd_Heart_Attack"/>
+        <parameter key="target_role" value="label"/>
+        <list key="set_additional_roles"/>
+      </operator>
+      <operator activated="true" class="compare_rocs" compatibility="8.2.000" expanded="true" height="82" name="Compare ROCs" width="90" x="313" y="136">
+        <parameter key="number_of_folds" value="20"/>
+        <parameter key="split_ratio" value="0.7"/>
+        <parameter key="sampling_type" value="linear sampling"/>
+        <parameter key="use_local_random_seed" value="false"/>
+        <parameter key="local_random_seed" value="1992"/>
+        <parameter key="use_example_weights" value="true"/>
+        <parameter key="roc_bias" value="optimistic"/>
+        <process expanded="true">
+          <operator activated="true" class="naive_bayes" compatibility="8.2.000" expanded="true" height="82" name="Naive Bayes" width="90" x="313" y="136">
+            <parameter key="laplace_correction" value="true"/>
+          </operator>
+          <operator activated="true" class="concurrency:parallel_decision_tree" compatibility="8.2.000" expanded="true" height="103" name="Decision Tree" width="90" x="313" y="34">
+            <parameter key="criterion" value="gain_ratio"/>
+            <parameter key="maximal_depth" value="20"/>
+            <parameter key="apply_pruning" value="true"/>
+            <parameter key="confidence" value="0.25"/>
+            <parameter key="apply_prepruning" value="true"/>
+            <parameter key="minimal_gain" value="0.1"/>
+            <parameter key="minimal_leaf_size" value="2"/>
+            <parameter key="minimal_size_for_split" value="4"/>
+            <parameter key="number_of_prepruning_alternatives" value="3"/>
+          </operator>
+          <operator activated="true" class="neural_net" compatibility="8.2.000" expanded="true" height="82" name="Neural Net" width="90" x="313" y="238">
+            <list key="hidden_layers"/>
+            <parameter key="training_cycles" value="500"/>
+            <parameter key="learning_rate" value="0.3"/>
+            <parameter key="momentum" value="0.2"/>
+            <parameter key="decay" value="false"/>
+            <parameter key="shuffle" value="true"/>
+            <parameter key="normalize" value="true"/>
+            <parameter key="error_epsilon" value="1.0E-5"/>
+            <parameter key="use_local_random_seed" value="false"/>
+            <parameter key="local_random_seed" value="1992"/>
+          </operator>
+          <connect from_port="train 1" to_op="Decision Tree" to_port="training set"/>
+          <connect from_port="train 2" to_op="Naive Bayes" to_port="training set"/>
+          <connect from_port="train 3" to_op="Neural Net" to_port="training set"/>
+          <connect from_op="Naive Bayes" from_port="model" to_port="model 2"/>
+          <connect from_op="Decision Tree" from_port="model" to_port="model 1"/>
+          <connect from_op="Neural Net" from_port="model" to_port="model 3"/>
+          <portSpacing port="source_train 1" spacing="0"/>
+          <portSpacing port="source_train 2" spacing="0"/>
+          <portSpacing port="source_train 3" spacing="0"/>
+          <portSpacing port="source_train 4" spacing="0"/>
+          <portSpacing port="sink_model 1" spacing="0"/>
+          <portSpacing port="sink_model 2" spacing="0"/>
+          <portSpacing port="sink_model 3" spacing="0"/>
+          <portSpacing port="sink_model 4" spacing="0"/>
+        </process>
+      </operator>
+      <connect from_op="Retrieve NB_Training" from_port="output" to_op="Set Role" to_port="example set input"/>
+      <connect from_op="Set Role" from_port="example set output" to_op="Compare ROCs" to_port="example set"/>
+      <connect from_op="Compare ROCs" from_port="exampleSet" to_port="result 1"/>
+      <connect from_op="Compare ROCs" from_port="rocComparison" to_port="result 2"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+      <portSpacing port="sink_result 3" spacing="0"/>
+    </process>
+  </operator>
+</process>

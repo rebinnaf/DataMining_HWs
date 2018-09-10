@@ -1,0 +1,5 @@
+"Gender";"Race";"Birth_Year";"Marital_Status";"Years_on_Internet";"Hours_Per_Day";"Preferred_Browser";"Preferred_Search_Engine";"Preferred_Email";"Read_News";"Online_Shopping";"Online_Gaming";"Facebook";"Twitter";"Other_Social_Network"
+"M";"White";1972.0;"M";8.0;1.0;"Firefox";"Google";"Yahoo";"Y";"N";"N";"Y";"N";"Google+"
+"F";"White";1961.0;"D";8.0;6.0;"Firefox";"Google";"Hotmail";"N";"Y";"N";"N";"Y";"Google+"
+"M";"White";1954.0;"M";2.0;3.0;"Internet Explorer";"Bing";"Hotmail";"Y";"Y";"N";"Y";"N";"Google+"
+"F";"Hispanic";1959.0;"D";12.0;5.0;"Chrome";"Google";"Gmail";"Y";"N";"N";"Y";"N";"Google+"
